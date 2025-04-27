@@ -1,0 +1,85 @@
+// --- Renk Sensör Pinleri ---
+#define S0 9
+#define S1 8
+#define S2 10
+#define S3 11
+#define sensorOut 12
+
+// --- LED Şerit Pinleri ---
+#define RED_LED_PIN A2
+#define GREEN_LED_PIN A1
+#define BLUE_LED_PIN A0
+
+void setup() {
+  Serial.begin(9600);
+
+  // Sensör pin ayarları
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(sensorOut, INPUT);
+
+  // LED pin ayarları
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(BLUE_LED_PIN, OUTPUT);
+
+  // Sensör frekans ayarları
+  digitalWrite(S0, HIGH);
+  digitalWrite(S1, LOW);
+
+  Serial.println("Renk sensör başlatıldı...");
+}
+
+void loop() {
+  int redFrequency = 0;
+  int greenFrequency = 0;
+  int blueFrequency = 0;
+
+  // KIRMIZI ölç
+  digitalWrite(S2, LOW);
+  digitalWrite(S3, LOW);
+  redFrequency = pulseIn(sensorOut, LOW);
+
+  // YEŞİL ölç
+  digitalWrite(S2, HIGH);
+  digitalWrite(S3, HIGH);
+  greenFrequency = pulseIn(sensorOut, LOW);
+
+  // MAVİ ölç
+  digitalWrite(S2, LOW);
+  digitalWrite(S3, HIGH);
+  blueFrequency = pulseIn(sensorOut, LOW);
+
+  // Sonuçları seri portta göster
+  Serial.print("KIRMIZI: ");
+  Serial.print(redFrequency);
+  Serial.print("  YEŞİL: ");
+  Serial.print(greenFrequency);
+  Serial.print("  MAVİ: ");
+  Serial.println(blueFrequency);
+
+  // LED şeritleri fade yapalım (yavaş yanıp sönme)
+  fadeLeds();
+
+  delay(500);
+}
+
+void fadeLeds() {
+  // LED'leri yavaşça aç
+  for (int brightness = 0; brightness <= 255; brightness++) {
+    analogWrite(RED_LED_PIN, brightness);
+    analogWrite(GREEN_LED_PIN, brightness);
+    analogWrite(BLUE_LED_PIN, brightness);
+    delay(5);
+  }
+
+  // LED'leri yavaşça kapat
+  for (int brightness = 255; brightness >= 0; brightness--) {
+    analogWrite(RED_LED_PIN, brightness);
+    analogWrite(GREEN_LED_PIN, brightness);
+    analogWrite(BLUE_LED_PIN, brightness);
+    delay(5);
+  }
+}
